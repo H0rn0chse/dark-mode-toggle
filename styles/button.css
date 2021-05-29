@@ -1,4 +1,5 @@
 #toggleContainer {
+    padding-top: 7em;
     /* The animation button occupys a larger square
     You can get the button size by looking at the size
     of the inner svg elements via the debugger */
