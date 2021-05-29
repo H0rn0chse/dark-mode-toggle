@@ -1,12 +1,13 @@
+import { ThemeHandler } from "./ThemeHandler.js";
 import { ToggleAnimation } from "./ToggleAnimation.js";
 
 export class Button {
-    constructor (player) {
+    constructor (player, container) {
         this.player = player;
 
         this.player.load("./assets/animationData.json");
         this.player.setSpeed(2);
-        this.player.addEventListener("click", (evt) => {
+        container.addEventListener("click", (evt) => {
             this.toggle();
         });
 

@@ -1,3 +1,18 @@
+#toggleContainer {
+    /* The animation button occupys a larger square
+    You can get the button size by looking at the size
+    of the inner svg elements via the debugger */
+    width: 192px;
+    height: 90px;
+    overflow: hidden;
+
+    /* center content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .toggleButton {
     cursor: pointer;
 }
