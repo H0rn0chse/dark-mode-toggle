@@ -8,3 +8,4 @@ A simple toggle button, which can be used in any context. I've used the animatio
 ## Libraries
  * AnimationData [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle)
  * Player [LottieFiles/lottie-player](https://github.com/LottieFiles/lottie-player)
+ * Github Corners [github.com/remarkablemark/github-corners](https://github.com/remarkablemark/github-corners)
