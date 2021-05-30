@@ -11,6 +11,7 @@
     "name": "h0rn0chse",
     "email": "h0rn0chse@gmx.de"
   },
+  "homepage": "https://github.com/H0rn0chse/dark-mode-toggle#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/H0rn0chse/dark-mode-toggle.git"
@@ -24,8 +25,5 @@
     "rollup-plugin-css-porter": "^1.0.2",
     "rollup-plugin-terser": "^7.0.2",
     "serve-static": "^1.14.1"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/h0rn0chse"
   }
 }
