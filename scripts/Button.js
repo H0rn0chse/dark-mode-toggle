@@ -1,13 +1,37 @@
 import { ThemeHandler } from "./ThemeHandler.js";
 import { ToggleAnimation } from "./ToggleAnimation.js";
 
-export class Button {
-    constructor (player, container) {
-        this.player = player;
+const { lottie } = globalThis;
 
-        this.player.load("./assets/animationData.json");
+export class Button {
+    constructor (container, options) {
+        this.options = options || {};
+        this.options.width = this.options.width || 320;
+
+        this.outerContainer = document.createElement("div");
+        this.outerContainer.classList.add("toggleContainer", "toggleButton");
+
+        const innerWidth = this._getInnerWidth();
+        this.innerContainer = document.createElement("div");
+        this.innerContainer.style.width = `${innerWidth}px`;
+        this.innerContainer.style.height = `${innerWidth}px`;
+
+        this.outerContainer.appendChild(this.innerContainer);
+        container.appendChild(this.outerContainer);
+
+        this.player = lottie.loadAnimation({
+            container: this.innerContainer,
+            renderer: "svg",
+            loop: false,
+            autoplay: false,
+            path: "assets/animationData.json",
+        });
+        this.player.addEventListener("DOMLoaded", (evt) => {
+            this._setContainerWidth();
+        });
+
         this.player.setSpeed(2);
-        container.addEventListener("click", (evt) => {
+        this.outerContainer.addEventListener("click", (evt) => {
             this.toggle();
         });
 
@@ -28,14 +52,25 @@ export class Button {
         const theme = ThemeHandler.getTheme();
         switch (theme) {
             case "light":
-                this.player.seek(this.animations.toLight.end);
+                this.player.goToAndStop(this.animations.toLight.end, true);
                 this.currentAnimation = "toLight";
                 break;
             case "dark":
-                this.player.seek(this.animations.toDark.end);
+                this.player.goToAndStop(this.animations.toDark.end, true);
                 this.currentAnimation = "toDark";
                 break;
         }
+    }
+
+    _getInnerWidth () {
+        return this.options.width * (320 / 192);
+    }
+
+    _setContainerWidth () {
+        const width = this.options.width;
+        const height = (90 / 192) * this.options.width;
+        this.outerContainer.style.width = `${width}px`;
+        this.outerContainer.style.height = `${height}px`;
     }
 
     _getInverseAnimation () {

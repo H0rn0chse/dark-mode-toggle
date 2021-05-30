@@ -2,48 +2,57 @@ const ASC = 1;
 const DESC = -1;
 
 export class ToggleAnimation {
-    constructor (lottie) {
-        this.lottie = lottie;
-        this.lottie.setLooping(false);
-        this.lottie.addEventListener("frame", (evt) => {
-            this.onFrame(evt);
-        });
-        this.lottie.addEventListener("complete", (evt) => {
+    constructor (player) {
+        this.player = player;
+        this.player.loop = false;
+
+        this.player.addEventListener("complete", (evt) => {
             this.onComplete(evt);
         });
 
-        this.targetFrame = null;
         this.dir = ASC;
         this.isPlaying = false;
     }
 
-    onFrame (evt) {
-        const currentFrame = Math.round(evt.detail.frame);
-        if (currentFrame === this.targetFrame) {
-            this.lottie.pause();
-            this.isPlaying = false;
-        }
-    }
-
     onComplete (evt) {
         this.isPlaying = false;
+        this.originalFrom = null;
+        this.originalTo = null;
     }
 
     play (fromFrame, toFrame) {
         if (this.isPlaying) {
-            // Allow fast toggling
-            this.dir = this.dir === ASC ? DESC : ASC;
-            this.lottie.setDirection(this.dir);
+            // Allow fast toggling by reversing the anmiation
+            const deltaFrame = Math.round(this.player.currentFrame);
+
+            if (this.dir === ASC) {
+                // reverse
+                this.dir = DESC;
+                fromFrame = deltaFrame + this.fromFrame;
+                toFrame = this.originalFrom || this.fromFrame;
+
+                this.player.setDirection(this.dir);
+                this.player.playSegments([fromFrame, toFrame], true);
+            } else {
+                // re-reverse
+                this.dir = ASC;
+                fromFrame = this.fromFrame - deltaFrame;
+
+                this.player.setDirection(this.dir);
+                this.player.playSegments([fromFrame, toFrame], true);
+            }
         } else {
             // start fresh animation
             this.dir = ASC;
-            this.lottie.seek(fromFrame);
-            this.lottie.setDirection(this.dir);
+            this.player.setDirection(this.dir);
+            this.player.playSegments([fromFrame, toFrame], true);
 
-            this.lottie.play();
+            this.originalFrom = fromFrame;
+            this.originalTo = toFrame;
         }
 
-        this.targetFrame = toFrame
         this.isPlaying = true;
+        this.fromFrame = fromFrame;
+        this.toFrame = toFrame;
     }
 }

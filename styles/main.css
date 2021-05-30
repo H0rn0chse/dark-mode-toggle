@@ -14,3 +14,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+#content > .toggleButton {
+    margin-top: 7em;
+}
