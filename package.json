@@ -1,5 +1,5 @@
 {
-  "name": "dark-mode-toggle",
+  "name": "@h0rn0chse/dark-mode-toggle",
   "version": "1.0.0",
   "description": "dark-mode-toggle",
   "main": "server.js",
