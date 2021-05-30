@@ -1,5 +1,4 @@
-import { Button } from "./Button.js";
-import { ThemeHandler } from "./ThemeHandler.js";
+const { Button } = globalThis.darkModeToggle;
 
 const container = document.querySelector("#content");
 // width is defined in px

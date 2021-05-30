@@ -1,5 +1,6 @@
 import { ThemeHandler } from "./ThemeHandler.js";
 import { ToggleAnimation } from "./ToggleAnimation.js";
+import animationData from "./animationData.json";
 
 const { lottie } = globalThis;
 
@@ -20,11 +21,12 @@ export class Button {
         container.appendChild(this.outerContainer);
 
         this.player = lottie.loadAnimation({
+
             container: this.innerContainer,
             renderer: "svg",
+            animationData: animationData,
             loop: false,
             autoplay: false,
-            path: "assets/animationData.json",
         });
         this.player.addEventListener("DOMLoaded", (evt) => {
             this._setContainerWidth();
@@ -91,3 +93,4 @@ export class Button {
         ThemeHandler.setTheme(this._getTheme());
     }
 }
+
