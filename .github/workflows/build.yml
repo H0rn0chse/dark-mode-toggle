@@ -5,8 +5,6 @@ name: build
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -28,7 +26,8 @@ jobs:
       - name: Commit dist files
         if: steps.changes.outputs.changed == 1
         run: |
-          git config --local user.name  ${{ github.actor }}
+          git config --local user.name  ${{ github.event.pusher.name }}
+          git config --local user.email  ${{ github.event.pusher.email }}
           git add ./dist
           git commit -m "[CI] Updating dist files"
       - name: Push changes
