@@ -13,6 +13,7 @@ A simple toggle button, which can be used in any context. I've used the animatio
 ## Usage
 Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/) and its [sourcefile](./scripts/index.js). You can add the resources either locally or via a CDN:
 ```html
+<!-- @h0rn0chse/dark-mode-toggle dependency -->
 <script src="https://unpkg.com/lottie-web@5.7/build/player/lottie.min.js"></script>
 
 <script src="https://unpkg.com/@h0rn0chse/dark-mode-toggle@1/dist/bundle.min.js"></script>
