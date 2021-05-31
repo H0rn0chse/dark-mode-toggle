@@ -26,6 +26,7 @@ export class Button extends EventBus {
         }
         if (this.options.useThemeHandler) {
             ThemeHandler.init();
+            ThemeHandler.on("themeChanged", this.onThemeChanged, this);
         }
 
         this.outerContainer = document.createElement("div");
@@ -53,7 +54,7 @@ export class Button extends EventBus {
 
         this.player.setSpeed(2);
         this.outerContainer.addEventListener("click", (evt) => {
-            this.toggle();
+            this._toggle();
         });
 
         this.wrapper = new ToggleAnimation(this, this.player);
@@ -109,7 +110,7 @@ export class Button extends EventBus {
         return this.currentAnimation === "toDark" ? "dark" : "light";
     }
 
-    toggle () {
+    _toggle () {
         const nextAnim = this._getInverseAnimation();
         const data = this.animations[nextAnim];
 
@@ -131,6 +132,13 @@ export class Button extends EventBus {
         const theme = this._getTheme();
 
         this.emit("animationComplete", { theme });
+    }
+
+    onThemeChanged (evt) {
+        const theme = this._getTheme();
+        if (evt.theme !== theme) {
+            this._toggle();
+        }
     }
 }
 

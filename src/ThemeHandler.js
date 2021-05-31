@@ -53,16 +53,18 @@ import { EventBus } from "./EventBus.js";
             return;
         }
 
+        const activeTheme = this._getInverseTheme(theme);
+
         const targetTheme = this.themes[theme].cloneNode();
         targetTheme.addEventListener("load", (evt) => {
+            activeTheme.remove();
             // theme is ready
             this.emit("themeLoaded", { theme });
         }, { once: true });
         document.head.appendChild(targetTheme);
-        this.themes[theme] = targetTheme;
 
-        const activeTheme = this._getInverseTheme(theme);
-        activeTheme.remove();
+        // save new theme and it's node
+        this.themes[theme] = targetTheme;
         this.currentTheme = theme;
 
         localStorage.setItem("theme", theme);
