@@ -1,13 +1,113 @@
 (function () {
     'use strict';
 
-    class _ThemeHandler {
+    class EventBus {
+        constructor (description = "") {
+            this.description = description;
+
+            this.eventHandler = new Map();
+        }
+
+        on (eventName, callback, scope) {
+            if (!this.has(eventName, callback, scope)) {
+                const key = {
+                    eventName,
+                    callback,
+                    scope,
+                };
+
+                const value = {
+                    once: false,
+                    eventName,
+                };
+
+                this.eventHandler.set(key, value);
+            }
+        }
+
+        _getKey (searchKey) {
+            return Array.from(this.eventHandler.keys()).find((key) => {
+                return searchKey.eventName === key.eventName
+                && searchKey.callback === key.callback
+                && searchKey.scope === key.scope;
+            });
+        }
+
+        once (eventName, callback, scope) {
+            if (!this.has(eventName, callback, scope)) {
+                const key = {
+                    eventName,
+                    callback,
+                    scope,
+                };
+
+                const value = {
+                    once: true,
+                    eventName,
+                };
+
+                this.eventHandler.set(key, value);
+            }
+        }
+
+        has (eventName, callback, scope) {
+            const key = {
+                eventName,
+                callback,
+                scope,
+            };
+            return !!this._getKey(key);
+        }
+
+        off (eventName, callback, scope) {
+            const searchKey = {
+                eventName,
+                callback,
+                scope,
+            };
+
+            const key = this._getKey(searchKey);
+            this.eventHandler.delete(key);
+        }
+
+        emit (eventName, ...args) {
+            this.eventHandler.forEach((value, key, map) => {
+                if (value.eventName !== eventName) {
+                    return;
+                }
+
+                const boundHandler = key.scope ? key.callback.bind(key.scope) : key.callback;
+
+                if (value.once) {
+                    map.delete(key);
+                }
+
+                try {
+                    boundHandler(...args);
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        }
+    }
+
+    class _ThemeHandler extends EventBus {
         constructor () {
+            super("ThemeBus");
+
             this.themes = {
                 light: document.querySelector("#light"),
                 dark: document.querySelector("#dark"),
             };
+            this.initialized = false;
+        }
 
+        init () {
+            if (this.initialized) {
+                return
+            }
+
+            this.initialized = true;
             const savedTheme = localStorage.getItem("theme");
             const systemTheme = this._initWatcher();
             this._initThemes(savedTheme || systemTheme);
@@ -46,6 +146,7 @@
             const targetTheme = this.themes[theme].cloneNode();
             targetTheme.addEventListener("load", (evt) => {
                 // theme is ready
+                this.emit("themeLoaded", { theme });
             }, { once: true });
             document.head.appendChild(targetTheme);
             this.themes[theme] = targetTheme;
@@ -55,6 +156,7 @@
             this.currentTheme = theme;
 
             localStorage.setItem("theme", theme);
+            this.emit("themeChanged", { theme });
         }
 
         getTheme () {
@@ -63,13 +165,15 @@
     }
 
     const ThemeHandler = new _ThemeHandler();
-    globalThis.ThemeHandler = ThemeHandler;
 
     const ASC = 1;
     const DESC = -1;
 
-    class ToggleAnimation {
-        constructor (player) {
+    class ToggleAnimation extends EventBus {
+        constructor (button, player) {
+            super("ToggleBus");
+
+            this.button = button;
             this.player = player;
             this.player.loop = false;
 
@@ -85,6 +189,7 @@
             this.isPlaying = false;
             this.originalFrom = null;
             this.originalTo = null;
+            this.emit("animationComplete", {});
         }
 
         play (fromFrame, toFrame) {
@@ -128,10 +233,27 @@
 
     const { lottie } = globalThis;
 
-    class Button {
+    const RATIO = 320 / 149.3333;
+    const OUTER_RATIO = 320 / 192;
+
+    const defaultOptions = {
+        width: 320,
+        //height: 150,
+        useThemeHandler: true,
+        initialTheme: undefined,
+    };
+
+    class Button extends EventBus {
         constructor (container, options) {
-            this.options = options || {};
-            this.options.width = this.options.width || 320;
+            super("ButtonBus");
+
+            this.options = Object.assign({}, defaultOptions, options);
+            if (this.options.height) {
+                this.options.width = this._getOuterWidth();
+            }
+            if (this.options.useThemeHandler) {
+                ThemeHandler.init();
+            }
 
             this.outerContainer = document.createElement("div");
             this.outerContainer.classList.add("toggleContainer", "toggleButton");
@@ -161,7 +283,8 @@
                 this.toggle();
             });
 
-            this.wrapper = new ToggleAnimation(this.player);
+            this.wrapper = new ToggleAnimation(this, this.player);
+            this.wrapper.on("animationComplete", this.onAnimationComplete, this);
 
             this.animations = {
                 toDark: {
@@ -175,26 +298,32 @@
                 },
             };
 
-            const theme = ThemeHandler.getTheme();
+            const { useThemeHandler, initialTheme } = this.options;
+            const theme = initialTheme || (useThemeHandler && ThemeHandler.getTheme());
             switch (theme) {
                 case "light":
                     this.player.goToAndStop(this.animations.toLight.end, true);
                     this.currentAnimation = "toLight";
                     break;
-                case "dark":
+                default:
+                // case "dark":
                     this.player.goToAndStop(this.animations.toDark.end, true);
                     this.currentAnimation = "toDark";
                     break;
             }
         }
 
+        _getOuterWidth () {
+            return this.options.height * RATIO;
+        }
+
         _getInnerWidth () {
-            return this.options.width * (320 / 192);
+            return this.options.width * OUTER_RATIO;
         }
 
         _setContainerWidth () {
             const width = this.options.width;
-            const height = (90 / 192) * this.options.width;
+            const height = this.options.width / RATIO;
             this.outerContainer.style.width = `${width}px`;
             this.outerContainer.style.height = `${height}px`;
         }
@@ -214,7 +343,21 @@
             this.wrapper.play(data.start, data.end);
 
             this.currentAnimation = nextAnim;
-            ThemeHandler.setTheme(this._getTheme());
+            const theme = this._getTheme();
+
+            this.emit("click", { theme });
+            this.emit("animationStart", { theme });
+
+            const { useThemeHandler } = this.options;
+            if (useThemeHandler) {
+                ThemeHandler.setTheme(theme);
+            }
+        }
+
+        onAnimationComplete () {
+            const theme = this._getTheme();
+
+            this.emit("animationComplete", { theme });
         }
     }
 
