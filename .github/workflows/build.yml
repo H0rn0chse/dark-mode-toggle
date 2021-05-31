@@ -18,12 +18,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-      - name: build
+      - name: install dependencies
+        run: npm install
+      - name: build dist folder
         run: npm run build
-      - name: Check changes to build
+      - name: Check changes in dist
         id: changes
         uses: UnicornGlobal/has-changes-action@v1.0.11
-      - name: Commit files
+      - name: Commit dist files
         if: steps.changes.outputs.changed == 1
         run: |
           git config --local user.name  ${{ github.actor }}
