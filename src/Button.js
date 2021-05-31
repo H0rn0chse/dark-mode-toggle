@@ -1,13 +1,32 @@
+import { EventBus } from "./EventBus.js";
 import { ThemeHandler } from "./ThemeHandler.js";
 import { ToggleAnimation } from "./ToggleAnimation.js";
+
 import animationData from "./animationData.json";
 
 const { lottie } = globalThis;
 
-export class Button {
+const RATIO = 320 / 149.3333;
+const OUTER_RATIO = 320 / 192;
+
+const defaultOptions = {
+    width: 320,
+    //height: 150,
+    useThemeHandler: true,
+    initialTheme: undefined,
+}
+
+export class Button extends EventBus {
     constructor (container, options) {
-        this.options = options || {};
-        this.options.width = this.options.width || 320;
+        super("ButtonBus");
+
+        this.options = Object.assign({}, defaultOptions, options);
+        if (this.options.height) {
+            this.options.width = this._getOuterWidth();
+        }
+        if (this.options.useThemeHandler) {
+            ThemeHandler.init();
+        }
 
         this.outerContainer = document.createElement("div");
         this.outerContainer.classList.add("toggleContainer", "toggleButton");
@@ -37,7 +56,8 @@ export class Button {
             this.toggle();
         });
 
-        this.wrapper = new ToggleAnimation(this.player);
+        this.wrapper = new ToggleAnimation(this, this.player);
+        this.wrapper.on("animationComplete", this.onAnimationComplete, this);
 
         this.animations = {
             toDark: {
@@ -51,26 +71,32 @@ export class Button {
             },
         };
 
-        const theme = ThemeHandler.getTheme();
+        const { useThemeHandler, initialTheme } = this.options;
+        const theme = initialTheme || (useThemeHandler && ThemeHandler.getTheme());
         switch (theme) {
             case "light":
                 this.player.goToAndStop(this.animations.toLight.end, true);
                 this.currentAnimation = "toLight";
                 break;
-            case "dark":
+            default:
+            // case "dark":
                 this.player.goToAndStop(this.animations.toDark.end, true);
                 this.currentAnimation = "toDark";
                 break;
         }
     }
 
+    _getOuterWidth () {
+        return this.options.height * RATIO;
+    }
+
     _getInnerWidth () {
-        return this.options.width * (320 / 192);
+        return this.options.width * OUTER_RATIO;
     }
 
     _setContainerWidth () {
         const width = this.options.width;
-        const height = (90 / 192) * this.options.width;
+        const height = this.options.width / RATIO;
         this.outerContainer.style.width = `${width}px`;
         this.outerContainer.style.height = `${height}px`;
     }
@@ -90,7 +116,21 @@ export class Button {
         this.wrapper.play(data.start, data.end);
 
         this.currentAnimation = nextAnim;
-        ThemeHandler.setTheme(this._getTheme());
+        const theme = this._getTheme();
+
+        this.emit("click", { theme });
+        this.emit("animationStart", { theme });
+
+        const { useThemeHandler } = this.options;
+        if (useThemeHandler) {
+            ThemeHandler.setTheme(theme);
+        }
+    }
+
+    onAnimationComplete () {
+        const theme = this._getTheme();
+
+        this.emit("animationComplete", { theme });
     }
 }
 

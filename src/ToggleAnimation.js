@@ -1,8 +1,13 @@
+import { EventBus } from "./EventBus.js";
+
 const ASC = 1;
 const DESC = -1;
 
-export class ToggleAnimation {
-    constructor (player) {
+export class ToggleAnimation extends EventBus {
+    constructor (button, player) {
+        super("ToggleBus");
+
+        this.button = button;
         this.player = player;
         this.player.loop = false;
 
@@ -18,6 +23,7 @@ export class ToggleAnimation {
         this.isPlaying = false;
         this.originalFrom = null;
         this.originalTo = null;
+        this.emit("animationComplete", {});
     }
 
     play (fromFrame, toFrame) {

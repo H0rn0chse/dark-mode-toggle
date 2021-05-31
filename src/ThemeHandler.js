@@ -1,10 +1,22 @@
-class _ThemeHandler {
+import { EventBus } from "./EventBus.js";
+
+ class _ThemeHandler extends EventBus {
     constructor () {
+        super("ThemeBus");
+
         this.themes = {
             light: document.querySelector("#light"),
             dark: document.querySelector("#dark"),
         };
+        this.initialized = false;
+    }
 
+    init () {
+        if (this.initialized) {
+            return
+        }
+
+        this.initialized = true;
         const savedTheme = localStorage.getItem("theme");
         const systemTheme = this._initWatcher();
         this._initThemes(savedTheme || systemTheme);
@@ -44,6 +56,7 @@ class _ThemeHandler {
         const targetTheme = this.themes[theme].cloneNode();
         targetTheme.addEventListener("load", (evt) => {
             // theme is ready
+            this.emit("themeLoaded", { theme });
         }, { once: true });
         document.head.appendChild(targetTheme);
         this.themes[theme] = targetTheme;
@@ -53,6 +66,7 @@ class _ThemeHandler {
         this.currentTheme = theme;
 
         localStorage.setItem("theme", theme);
+        this.emit("themeChanged", { theme });
     }
 
     getTheme () {
@@ -61,4 +75,3 @@ class _ThemeHandler {
 }
 
 export const ThemeHandler = new _ThemeHandler();
-globalThis.ThemeHandler = ThemeHandler;
