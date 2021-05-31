@@ -143,16 +143,18 @@
                 return;
             }
 
+            const activeTheme = this._getInverseTheme(theme);
+
             const targetTheme = this.themes[theme].cloneNode();
             targetTheme.addEventListener("load", (evt) => {
+                activeTheme.remove();
                 // theme is ready
                 this.emit("themeLoaded", { theme });
             }, { once: true });
             document.head.appendChild(targetTheme);
-            this.themes[theme] = targetTheme;
 
-            const activeTheme = this._getInverseTheme(theme);
-            activeTheme.remove();
+            // save new theme and it's node
+            this.themes[theme] = targetTheme;
             this.currentTheme = theme;
 
             localStorage.setItem("theme", theme);
@@ -253,6 +255,7 @@
             }
             if (this.options.useThemeHandler) {
                 ThemeHandler.init();
+                ThemeHandler.on("themeChanged", this.onThemeChanged, this);
             }
 
             this.outerContainer = document.createElement("div");
@@ -280,7 +283,7 @@
 
             this.player.setSpeed(2);
             this.outerContainer.addEventListener("click", (evt) => {
-                this.toggle();
+                this._toggle();
             });
 
             this.wrapper = new ToggleAnimation(this, this.player);
@@ -336,7 +339,7 @@
             return this.currentAnimation === "toDark" ? "dark" : "light";
         }
 
-        toggle () {
+        _toggle () {
             const nextAnim = this._getInverseAnimation();
             const data = this.animations[nextAnim];
 
@@ -358,6 +361,13 @@
             const theme = this._getTheme();
 
             this.emit("animationComplete", { theme });
+        }
+
+        onThemeChanged (evt) {
+            const theme = this._getTheme();
+            if (evt.theme !== theme) {
+                this._toggle();
+            }
         }
     }
 
