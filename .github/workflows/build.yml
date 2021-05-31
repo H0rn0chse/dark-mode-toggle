@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 12
       - name: build
-        run: npm build
+        run: npm run build
       - name: Check changes to build
         id: changes
         uses: UnicornGlobal/has-changes-action@v1.0.11
