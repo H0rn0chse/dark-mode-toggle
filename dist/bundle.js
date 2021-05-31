@@ -269,8 +269,11 @@
             this.outerContainer.appendChild(this.innerContainer);
             container.appendChild(this.outerContainer);
 
-            this.player = lottie.loadAnimation({
+            this.outerContainer.addEventListener("click", (evt) => {
+                this._toggle();
+            });
 
+            this.player = lottie.loadAnimation({
                 container: this.innerContainer,
                 renderer: "svg",
                 animationData: animationData,
@@ -280,11 +283,7 @@
             this.player.addEventListener("DOMLoaded", (evt) => {
                 this._setContainerWidth();
             });
-
             this.player.setSpeed(2);
-            this.outerContainer.addEventListener("click", (evt) => {
-                this._toggle();
-            });
 
             this.wrapper = new ToggleAnimation(this, this.player);
             this.wrapper.on("animationComplete", this.onAnimationComplete, this);
@@ -303,13 +302,15 @@
 
             const { useThemeHandler, initialTheme } = this.options;
             const theme = initialTheme || (useThemeHandler && ThemeHandler.getTheme());
+
             switch (theme) {
                 case "light":
                     this.player.goToAndStop(this.animations.toLight.end, true);
                     this.currentAnimation = "toLight";
                     break;
-                default:
+
                 // case "dark":
+                default:
                     this.player.goToAndStop(this.animations.toDark.end, true);
                     this.currentAnimation = "toDark";
                     break;
@@ -351,8 +352,7 @@
             this.emit("click", { theme });
             this.emit("animationStart", { theme });
 
-            const { useThemeHandler } = this.options;
-            if (useThemeHandler) {
+            if (this.options.useThemeHandler) {
                 ThemeHandler.setTheme(theme);
             }
         }
