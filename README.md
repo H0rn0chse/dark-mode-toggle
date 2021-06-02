@@ -23,7 +23,7 @@ You can add a button afterwards dynamically:
 ```javascript
 const { Button, ThemeHandler } = globalThis.darkModeToggle;
 
-const button = new Button(document.getElementById("#element");, { width: 320 });
+const button = new Button(document.getElementById("#element"), { width: 320 });
 ```
 
 
