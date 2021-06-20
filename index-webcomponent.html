@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Toggle</title>
+
+    <link id="dark" rel="stylesheet" href="./styles/dark.css">
+    <link id="light" rel="stylesheet" href="./styles/light.css">
+    <link rel="stylesheet" href="./styles/main.css">
+
+    <!-- dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.8/lottie.min.js"></script>
+
+    <!-- bundled ressources -->
+    <script src="./dist/bundle.wc.js"></script>
+
+    <script type="module" src="./scripts/index-webcomponent.js"></script>
+</head>
+<body>
+    <div id="content">
+        <h1>Dark Mode Toggle Button</h1>
+        <dark-mode-toggle
+            id="toggle"
+            width="320"
+        >
+        </dark-mode-toggle>
+    </div>
+</body>
+<script
+		data-label="Check out the GitHub repository!"
+		data-href="https://github.com/H0rn0chse/dark-mode-toggle"
+		data-target="_blank"
+		src="https://unpkg.com/github-corners@latest/dist/embed.min.js">
+	</script>
+</html>
