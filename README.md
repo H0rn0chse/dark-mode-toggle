@@ -11,21 +11,30 @@ A simple toggle button, which can be used in any context. I've used the animatio
  * Github Corners [github.com/remarkablemark/github-corners](https://github.com/remarkablemark/github-corners)
 
 ## Usage
-Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/) and its [sourcefile](./scripts/index.js). You can add the resources either locally or via a CDN:
+Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/demo). You can add the resources either locally or via a CDN (or as npm package):
 ```html
 <!-- @h0rn0chse/dark-mode-toggle dependency -->
 <script src="https://unpkg.com/lottie-web@5.7/build/player/lottie.min.js"></script>
 
 <script src="https://unpkg.com/@h0rn0chse/dark-mode-toggle@1/dist/bundle.min.js"></script>
+
+<!--The css is only required when the button is NOT used as WebComponent-->
 <link rel="stylesheet" href="https://unpkg.com/@h0rn0chse/dark-mode-toggle@1/dist/bundle.min.css">
 ```
-You can add a button afterwards dynamically:
+
+You can either add a Button as WebComponent
+```html
+<dark-mode-toggle
+    id="toggle"
+    width="320"
+/>
+```
+or via a scrict dynamically:
 ```javascript
 const { Button, ThemeHandler } = globalThis.darkModeToggle;
 
-const button = new Button(document.getElementById("#element"), { width: 320 });
+const button = new Button(document.getElementById("#container"), { width: 320 });
 ```
-
 
 # Documentation
 
@@ -40,8 +49,17 @@ The height of the button in pixels. Be aware that `options.height` will be prefe
 ### option.useThemeHandler (default: true)
 A boolean wether to use the themeHandler and its logic. Be aware that once a button was created using the themeHandler it's not possible to remove the themeHandler.
 
-### option.initialTheme
-A enum which can be either `dark` or `light`. Defines the initial state of the button
+### option.theme
+A enum which can be either `dark` or `light`. Defines the initial state of the button. You might use this option when you are using your own theme handler.
+
+### Button.setWidth(width)
+Sets the width of the button. The `width` is required to be provided as number (of pixels). Keeps the aspect ratio of the button.
+
+### Button.setHeight(height)
+Sets the height of the button. The `height` is required to be provided as number (of pixels). Keeps the aspect ratio of the button.
+
+### Button.setTheme(theme, skipAnimation=false)
+Sets the theme of the button by toggling the button to the desired state. Valid values for `theme` are `dark` and `light`. You can skip the animation by setting `skipAnimation` to `true`.
 
 ## Button Events
 Please look for [Events](#events) on details how to register and deregister to events.
@@ -83,3 +101,7 @@ Subscribes once to an event. Please be aware that a handler which was already at
 
 ### EventProvider.off(name, callback, [scope])
 Removes the subscription to an event. This method also works for handlers attached via `EventProvider.once` and which were not triggered yet.
+
+## WebComponent
+
+The WebComponent accepts all the options the [Button](#new-buttoncontainer-options) provides. It also provides the API of the [EventProivder](#events) and the [Button](#new-buttoncontainer-options). The WebComponent reacts dynamically on `width`, `height` and `theme`. Simliar to the options you cannot simultaneously set `width` and `height`.
