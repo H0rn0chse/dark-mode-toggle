@@ -7,49 +7,28 @@ import { replaceStyleTemplate } from "./rollup-plugins/replaceStyleTemplate.js";
 
 export default [
     {
-        input: "src/build/default.js",
-        output: [
-            {
-                file: "dist/bundle.js",
-                format: "iife"
-            },
-            {
-                file: "dist/bundle.min.js",
-                format: "iife",
-                plugins: [terser()]
-            }
-        ],
-        plugins: [
-            json({
-                compact: true,
-            }),
-            css({
-                raw: "dist/bundle.css",
-                minified: "dist/bundle.min.css",
-            })
-        ]
-    },
-    {
         input: "src/build/webcomponent.js",
         output: [
             {
-                file: "dist/bundle.wc.js",
+                file: "dist/bundle.js",
                 format: "iife",
+                name: "darkModeToggle",
                 plugins: [
                     replaceStyleTemplate({
                         src: "dist/bundle.css",
-                        target: "dist/bundle.wc.js"
+                        target: "dist/bundle.js"
                     }),
                 ]
             },
             {
-                file: "dist/bundle.wc.min.js",
+                file: "dist/bundle.min.js",
                 format: "iife",
+                name: "darkModeToggle",
                 plugins: [
                     terser(),
                     replaceStyleTemplate({
                         src: "dist/bundle.min.css",
-                        target: "dist/bundle.wc.min.js"
+                        target: "dist/bundle.min.js"
                     }),
                 ]
             }

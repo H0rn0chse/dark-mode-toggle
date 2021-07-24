@@ -194,6 +194,13 @@
             this.emit("animationComplete", {});
         }
 
+        setFrame (frame) {
+            this.player.goToAndStop(frame, true);
+            this.isPlaying = false;
+            this.fromFrame = null;
+            this.toFrame = null;
+        }
+
         play (fromFrame, toFrame) {
             if (this.isPlaying) {
                 // Allow fast toggling by reversing the anmiation
@@ -242,7 +249,7 @@
         width: 320,
         //height: 150,
         useThemeHandler: true,
-        initialTheme: undefined,
+        theme: undefined,
     };
 
     class Button extends EventBus {
@@ -260,18 +267,14 @@
 
             this.outerContainer = document.createElement("div");
             this.outerContainer.classList.add("toggleContainer", "toggleButton");
-
-            const innerWidth = this._getInnerWidth();
-            this.innerContainer = document.createElement("div");
-            this.innerContainer.style.width = `${innerWidth}px`;
-            this.innerContainer.style.height = `${innerWidth}px`;
-
-            this.outerContainer.appendChild(this.innerContainer);
-            container.appendChild(this.outerContainer);
-
             this.outerContainer.addEventListener("click", (evt) => {
                 this._toggle();
             });
+
+            this.innerContainer = document.createElement("div");
+
+            this.outerContainer.appendChild(this.innerContainer);
+            container.appendChild(this.outerContainer);
 
             this.player = lottie.loadAnimation({
                 container: this.innerContainer,
@@ -281,7 +284,7 @@
                 autoplay: false,
             });
             this.player.addEventListener("DOMLoaded", (evt) => {
-                this._setContainerWidth();
+                this._setWidth();
             });
             this.player.setSpeed(2);
 
@@ -300,7 +303,7 @@
                 },
             };
 
-            const { useThemeHandler, initialTheme } = this.options;
+            const { useThemeHandler, theme: initialTheme } = this.options;
             const theme = initialTheme || (useThemeHandler && ThemeHandler.getTheme());
 
             switch (theme) {
@@ -317,19 +320,51 @@
             }
         }
 
+        _setWidth () {
+            const innerWidth = this._getInnerWidth();
+            this.innerContainer.style.width = `${innerWidth}px`;
+            this.innerContainer.style.height = `${innerWidth}px`;
+
+            const width = this.options.width;
+            const height = this.options.width / RATIO;
+            this.outerContainer.style.width = `${width}px`;
+            this.outerContainer.style.height = `${height}px`;
+        }
+
+        setWidth (width) {
+            if (typeof width !== "number") {
+                return new Error("The width is required to be a number!");
+            }
+            this.options.width = width;
+            this._setWidth();
+        }
+
+        setHeight (height) {
+            if (typeof height !== "number") {
+                return new Error("The height is required to be a number!");
+            }
+            this.options.height = height;
+            this.options.width = this._getOuterWidth();
+            this._setWidth();
+        }
+
+        setTheme (theme, skipAnimation=false) {
+            if (theme !== "dark" && theme !== "light") {
+                return new Error("The theme is required to be 'dark' or 'light'");
+            }
+            const currentTheme = this._getTheme();
+            if (currentTheme === theme) {
+                return;
+            }
+            this._toggle(skipAnimation);
+        }
+
         _getOuterWidth () {
             return this.options.height * RATIO;
         }
 
         _getInnerWidth () {
             return this.options.width * OUTER_RATIO;
-        }
-
-        _setContainerWidth () {
-            const width = this.options.width;
-            const height = this.options.width / RATIO;
-            this.outerContainer.style.width = `${width}px`;
-            this.outerContainer.style.height = `${height}px`;
         }
 
         _getInverseAnimation () {
@@ -340,11 +375,15 @@
             return this.currentAnimation === "toDark" ? "dark" : "light";
         }
 
-        _toggle () {
+        _toggle (skipAnimation) {
             const nextAnim = this._getInverseAnimation();
             const data = this.animations[nextAnim];
 
-            this.wrapper.play(data.start, data.end);
+            if (skipAnimation) {
+                this.wrapper.setFrame(data.end);
+            } else {
+                this.wrapper.play(data.start, data.end);
+            }
 
             this.currentAnimation = nextAnim;
             const theme = this._getTheme();
@@ -370,6 +409,113 @@
             }
         }
     }
+
+    const styleTemplate = document.createElement("template");
+    styleTemplate.innerHTML = `<style>.toggleContainer {
+    margin: 0.5em;
+    cursor: pointer;
+
+    /* The animation button occupys a larger square
+    You can get the button size by looking at the size
+    of the inner svg elements via the debugger */
+    /* width: 192px;
+    height: 90px; */
+    overflow: hidden;
+
+    /* center content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}</style>`;
+
+    class Toggle extends HTMLElement {
+        static get observedAttributes() {
+            return [
+                "width",
+                "height",
+                "theme",
+            ];
+        }
+
+        connectedCallback() {
+            // Create a shadow root
+            this.attachShadow({ mode: "open" });
+
+            const options = {
+                width: this.getAttribute("width"),
+                height: this.getAttribute("height"),
+                theme: this.getAttribute("theme"),
+                useThemeHandler: this.getAttribute("useThemeHandler") ?? true,
+            };
+
+            this.shadowRoot.appendChild(styleTemplate.content.cloneNode(true));
+            this.button = new Button(this.shadowRoot, options);
+            this.button.on("click", (evt) => {
+                this.setAttribute("theme", evt.theme);
+            });
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+            if (newValue == undefined || oldValue === newValue) {
+                return;
+            }
+
+            switch (name) {
+                case "width":
+                    this.setWidth(parseInt(newValue, 10));
+                    break;
+                case "height":
+                    this.setHeight(parseInt(newValue, 10));
+                    break;
+                case "theme":
+                    this.setTheme(newValue);
+                    break;
+                default:
+                    throw new Error(`The property ${name} is not supported`);
+            }
+        }
+
+        setWidth (width) {
+            this.button?.setWidth(width);
+            this.setAttribute("width", width);
+            this.removeAttribute("height");
+        }
+
+        setHeight (height) {
+            this.button?.setHeight(height);
+            this.setAttribute("height", height);
+            this.removeAttribute("width");
+        }
+
+        setTheme (theme) {
+            this.button?.setTheme(theme);
+            this.setAttribute("theme", theme);
+        }
+
+        on (...args) {
+            this.button?.on(...args);
+            if (ThemeHandler.initialized) {
+                ThemeHandler.on(...args);
+            }
+        }
+
+        once (...args) {
+            this.button?.once(...args);
+            if (ThemeHandler.initialized) {
+                ThemeHandler.once(...args);
+            }
+        }
+
+        off (...args) {
+            this.button?.off(...args);
+            if (ThemeHandler.initialized) {
+                ThemeHandler.off(...args);
+            }
+        }
+    }
+
+    window.customElements.define("dark-mode-toggle", Toggle);
 
     globalThis.darkModeToggle = {
         Button,
