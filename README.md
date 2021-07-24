@@ -16,10 +16,10 @@ Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/demo). Y
 <!-- @h0rn0chse/dark-mode-toggle dependency -->
 <script src="https://unpkg.com/lottie-web@5.7/build/player/lottie.min.js"></script>
 
-<script src="https://unpkg.com/@h0rn0chse/dark-mode-toggle@1/dist/bundle.min.js"></script>
+<script src="https://unpkg.com/@h0rn0chse/dark-mode-toggle@2/dist/bundle.min.js"></script>
 
 <!--The css is only required when the button is NOT used as WebComponent-->
-<link rel="stylesheet" href="https://unpkg.com/@h0rn0chse/dark-mode-toggle@1/dist/bundle.min.css">
+<link rel="stylesheet" href="https://unpkg.com/@h0rn0chse/dark-mode-toggle@2/dist/bundle.min.css">
 ```
 
 You can either add a Button as WebComponent
