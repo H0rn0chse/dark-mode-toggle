@@ -488,8 +488,8 @@
             this.removeAttribute("width");
         }
 
-        setTheme (theme) {
-            this.button?.setTheme(theme);
+        setTheme (theme, skipAnimation) {
+            this.button?.setTheme(theme, skipAnimation);
             this.setAttribute("theme", theme);
         }
 
