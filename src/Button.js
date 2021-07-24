@@ -13,7 +13,7 @@ const defaultOptions = {
     width: 320,
     //height: 150,
     useThemeHandler: true,
-    initialTheme: undefined,
+    theme: undefined,
 };
 
 export class Button extends EventBus {
@@ -31,18 +31,14 @@ export class Button extends EventBus {
 
         this.outerContainer = document.createElement("div");
         this.outerContainer.classList.add("toggleContainer", "toggleButton");
-
-        const innerWidth = this._getInnerWidth();
-        this.innerContainer = document.createElement("div");
-        this.innerContainer.style.width = `${innerWidth}px`;
-        this.innerContainer.style.height = `${innerWidth}px`;
-
-        this.outerContainer.appendChild(this.innerContainer);
-        container.appendChild(this.outerContainer);
-
         this.outerContainer.addEventListener("click", (evt) => {
             this._toggle();
         });
+
+        this.innerContainer = document.createElement("div");
+
+        this.outerContainer.appendChild(this.innerContainer);
+        container.appendChild(this.outerContainer);
 
         this.player = lottie.loadAnimation({
             container: this.innerContainer,
@@ -52,7 +48,7 @@ export class Button extends EventBus {
             autoplay: false,
         });
         this.player.addEventListener("DOMLoaded", (evt) => {
-            this._setContainerWidth();
+            this._setWidth();
         });
         this.player.setSpeed(2);
 
@@ -71,7 +67,7 @@ export class Button extends EventBus {
             },
         };
 
-        const { useThemeHandler, initialTheme } = this.options;
+        const { useThemeHandler, theme: initialTheme } = this.options;
         const theme = initialTheme || (useThemeHandler && ThemeHandler.getTheme());
 
         switch (theme) {
@@ -88,19 +84,51 @@ export class Button extends EventBus {
         }
     }
 
+    _setWidth () {
+        const innerWidth = this._getInnerWidth();
+        this.innerContainer.style.width = `${innerWidth}px`;
+        this.innerContainer.style.height = `${innerWidth}px`;
+
+        const width = this.options.width;
+        const height = this.options.width / RATIO;
+        this.outerContainer.style.width = `${width}px`;
+        this.outerContainer.style.height = `${height}px`;
+    }
+
+    setWidth (width) {
+        if (typeof width !== "number") {
+            return new Error("The width is required to be a number!");
+        }
+        this.options.width = width;
+        this._setWidth();
+    }
+
+    setHeight (height) {
+        if (typeof height !== "number") {
+            return new Error("The height is required to be a number!");
+        }
+        this.options.height = height;
+        this.options.width = this._getOuterWidth();
+        this._setWidth();
+    }
+
+    setTheme (theme, skipAnimation=false) {
+        if (theme !== "dark" && theme !== "light") {
+            return new Error("The theme is required to be 'dark' or 'light'");
+        }
+        const currentTheme = this._getTheme();
+        if (currentTheme === theme) {
+            return;
+        }
+        this._toggle(skipAnimation);
+    }
+
     _getOuterWidth () {
         return this.options.height * RATIO;
     }
 
     _getInnerWidth () {
         return this.options.width * OUTER_RATIO;
-    }
-
-    _setContainerWidth () {
-        const width = this.options.width;
-        const height = this.options.width / RATIO;
-        this.outerContainer.style.width = `${width}px`;
-        this.outerContainer.style.height = `${height}px`;
     }
 
     _getInverseAnimation () {
@@ -111,11 +139,15 @@ export class Button extends EventBus {
         return this.currentAnimation === "toDark" ? "dark" : "light";
     }
 
-    _toggle () {
+    _toggle (skipAnimation) {
         const nextAnim = this._getInverseAnimation();
         const data = this.animations[nextAnim];
 
-        this.wrapper.play(data.start, data.end);
+        if (skipAnimation) {
+            this.wrapper.setFrame(data.end);
+        } else {
+            this.wrapper.play(data.start, data.end);
+        }
 
         this.currentAnimation = nextAnim;
         const theme = this._getTheme();

@@ -26,6 +26,13 @@ export class ToggleAnimation extends EventBus {
         this.emit("animationComplete", {});
     }
 
+    setFrame (frame) {
+        this.player.goToAndStop(frame, true)
+        this.isPlaying = false;
+        this.fromFrame = null;
+        this.toFrame = null;
+    }
+
     play (fromFrame, toFrame) {
         if (this.isPlaying) {
             // Allow fast toggling by reversing the anmiation
