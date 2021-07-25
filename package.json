@@ -39,6 +39,7 @@
     "theme",
     "local",
     "storage",
-    "animation"
+    "animation",
+    "webcomponent"
   ]
 }
