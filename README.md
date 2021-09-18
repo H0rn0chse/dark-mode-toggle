@@ -11,7 +11,7 @@ A simple toggle button, which can be used in any context. I've used the animatio
  * Github Corners [github.com/remarkablemark/github-corners](https://github.com/remarkablemark/github-corners)
 
 ## Usage
-Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/demo). You can add the resources either locally or via a CDN (or as npm package):
+Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle/demo). You can add the resources either locally or via a CDN (or as [npm package](https://www.npmjs.com/package/@h0rn0chse/dark-mode-toggle)):
 ```html
 <!-- @h0rn0chse/dark-mode-toggle dependency -->
 <script src="https://unpkg.com/lottie-web@5.7/build/player/lottie.min.js"></script>
@@ -33,7 +33,7 @@ or via a scrict dynamically:
 ```javascript
 const { Button, ThemeHandler } = globalThis.darkModeToggle;
 
-const button = new Button(document.getElementById("#container"), { width: 320 });
+const button = new Button(document.querySelector("#container"), { width: 320 });
 ```
 
 # Documentation
