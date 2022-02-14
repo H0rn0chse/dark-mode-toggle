@@ -20,8 +20,8 @@ dependencies.forEach((dep) => {
     copyRecursiveSync(pathFrom, pathTo);
 });
 
-// Copy client to gh-pages
-const pathFrom = path.join(projectDir, "client");
+// Copy demo to gh-pages
+const pathFrom = path.join(projectDir, "demo");
 const pathTo = path.join(projectDir, "gh-pages");
 copyRecursiveSync(pathFrom, pathTo);
 
