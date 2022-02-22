@@ -8,6 +8,7 @@ A simple toggle button, which can be used in any context. I've used the animatio
 ## Libraries
  * AnimationData [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle)
  * Player [LottieFiles/lottie-web](https://github.com/LottieFiles/lottie-web)
+ * Feather Icons [github.com/feathericons/feather](https://github.com/feathericons/feather)
  * Github Corners [github.com/YunYouJun/wc-github-corners](https://github.com/YunYouJun/wc-github-corners)
 
 ## Usage

@@ -1,6 +1,9 @@
 const { ThemeHandler } = globalThis.darkModeToggle;
 
 const button = document.querySelector("#toggle");
+const favicon = document.querySelector("#favicon");
+
+favicon.href = `./toggle-${ThemeHandler.getTheme()}.svg`;
 
 button.on("click", (evt) => {
     console.log(`button was clicked: ${evt.theme}`);
@@ -16,6 +19,7 @@ button.on("animationComplete", (evt) => {
 
 ThemeHandler.on("themeChanged", (evt) => {
     console.log(`Theme changed: ${evt.theme}`);
+    favicon.href = `./toggle-${evt.theme}.svg`;
 });
 
 ThemeHandler.on("themeLoaded", (evt) => {
