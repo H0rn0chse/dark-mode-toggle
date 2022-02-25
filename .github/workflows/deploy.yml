@@ -23,8 +23,7 @@ jobs:
       - name: Clear subfolder
         run: rm -rf gh-pages/*
 
-      - name: Copy new files for pages
-        run: node ./scripts/copyDeps.js
+      - uses: H0rn0chse/gh-pages-copy-action@main
 
       - name: Commit gh-pages files
         continue-on-error: true
