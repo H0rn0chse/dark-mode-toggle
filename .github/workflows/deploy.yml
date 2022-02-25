@@ -24,6 +24,8 @@ jobs:
         run: rm -rf gh-pages/*
 
       - uses: H0rn0chse/gh-pages-copy-action@main
+        with:
+          root: ${{ env.GITHUB_WORKSPACE }}
 
       - name: Commit gh-pages files
         continue-on-error: true
