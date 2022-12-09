@@ -9,7 +9,7 @@ A simple toggle button, which can be used in any context. I've used the animatio
  * AnimationData [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle)
  * Player [LottieFiles/lottie-web](https://github.com/LottieFiles/lottie-web)
  * Feather Icons [github.com/feathericons/feather](https://github.com/feathericons/feather)
- * Github Corners [github.com/YunYouJun/wc-github-corners](https://github.com/YunYouJun/wc-github-corners)
+ * Github Corners [github.com/YuskaWu/github-corner-element](https://github.com/YuskaWu/github-corner-element)
 
 ## Usage
 Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle). You can add the resources either locally or via a CDN (or as [npm package](https://www.npmjs.com/package/@h0rn0chse/dark-mode-toggle)):
