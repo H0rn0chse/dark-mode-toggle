@@ -1,6 +1,6 @@
 /*
     @h0rn0chse/dark-mode-toggle - dist/bundle.js
-    version 2.1.1 - built at 2022-12-09
+    version 2.1.1 - built at 2023-07-17
     @license MIT
 */
 (function () {
