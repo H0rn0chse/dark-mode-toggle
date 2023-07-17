@@ -1,18 +1,14 @@
 # Dark Mode Toggle
-A simple toggle button, which can be used in any context. I've used the animation data from [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle), which only supports react. This project should allow the usage of the great animation in non-react enviroments. In addition I've added a very basic implementation for swapping dark/ light themes.
+A simple toggle button, which can be used in any context. It's built as WebComponent and available as [npm package](https://www.npmjs.com/package/@h0rn0chse/dark-mode-toggle).
+
+The animation data is from [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle), which only supports react. This project shall allow the usage of the nice animations in non-react enviroments. It also supports a very basic implementation for changing dark/ light themes.
 
 <br>
 
 <img src="./assets/screenshot.png" title="Screenshot" />
 
-## Libraries
- * AnimationData [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle)
- * Player [LottieFiles/lottie-web](https://github.com/LottieFiles/lottie-web)
- * Feather Icons [github.com/feathericons/feather](https://github.com/feathericons/feather)
- * Github Corners [github.com/YuskaWu/github-corner-element](https://github.com/YuskaWu/github-corner-element)
-
 ## Usage
-Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle). You can add the resources either locally or via a CDN (or as [npm package](https://www.npmjs.com/package/@h0rn0chse/dark-mode-toggle)):
+Please checkout the [demo](https://h0rn0chse.github.io/dark-mode-toggle). You can add the resources either locally, via a CDN or as [npm package](https://www.npmjs.com/package/@h0rn0chse/dark-mode-toggle):
 ```html
 <!-- @h0rn0chse/dark-mode-toggle dependency -->
 <script src="https://unpkg.com/lottie-web@5.7/build/player/lottie.min.js"></script>
@@ -106,3 +102,9 @@ Removes the subscription to an event. This method also works for handlers attach
 ## WebComponent
 
 The WebComponent accepts all the options the [Button](#new-buttoncontainer-options) provides. It also provides the API of the [EventProivder](#events) and the [Button](#new-buttoncontainer-options). The WebComponent reacts dynamically on `width`, `height` and `theme`. Simliar to the options you cannot simultaneously set `width` and `height`.
+
+## Libraries
+ * AnimationData [cawfree/react-dark-mode-toggle](https://github.com/cawfree/react-dark-mode-toggle)
+ * Player [LottieFiles/lottie-web](https://github.com/LottieFiles/lottie-web)
+ * Feather Icons [github.com/feathericons/feather](https://github.com/feathericons/feather)
+ * Github Corners [github.com/YuskaWu/github-corner-element](https://github.com/YuskaWu/github-corner-element)
